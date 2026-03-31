@@ -1,0 +1,2 @@
+# Assessing-Phraseological-Competence-through-Association-Measures_The-Role-of-Reference-Corpus
+This repository provides the full computational pipeline used in the sstudy, including scripts to (1) extract dependency pairs from the reference corpora and compute relation-specific PMI scores, (2) extract dependency pairs from the learner transcripts; 3) map reference PMI values onto learner-extracted pairs.
