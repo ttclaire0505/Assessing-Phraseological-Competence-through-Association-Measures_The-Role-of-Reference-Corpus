@@ -1,227 +1,162 @@
+
 ```markdown
-# COCA Dependency Pair PMI Extraction + Learner Mapping
+# OSF Repository: Assessing EFL Learners' Phraseological Competence through Association Measures
 
-This repository provides a reproducible pipeline to:
-1) Extract COCA dependency pair frequency and PMI (log2) for each register/domain (**all / academic / news / spoken**).
-2) Extract the same dependency-pair instances from EFL learner transcripts.
-3) Left-join COCA reference PMI/frequency onto learner instances to create the final dataset used for downstream analyses (e.g., coverage, ΔPMI, ranking stability).
+This repository contains all code and supplementary materials for the study investigating how reference corpus selection affects PMI-based evaluations of EFL learners' phraseological competence.
 
 ---
 
-## Repository Contents
+OSF_Project/
 
-- `extract_coca_dependency_pairs_pmi.py`
-  - Compute reference dependency pair statistics (+ PMI) from COCA.
-  - Run once per domain: `--domain academic|news|spoken|all`
+- `README.md` — This file  
+- `Code/` — All analysis scripts  
+  - `01_extract_learner_dependency_pairs.py`  
+  - `02_prepare_coca_pmi_data.py`  
+  - `03_pair_level_analysis.py`  
+  - `04_prepare_learner_pmi_data.py`  
+  - `05_learner_level_analysis.py`  
 
-- `extract_learner_dependency_pairs.py`
-  - Extract learner dependency pair instances token-level using spaCy dependency parsing.
+- `Sample_Data/` — Representative sample data  
+  - `README.md` — Sample data description  
+  - `LEARNER_TEXTS/` — 2 example learner transcripts  
+    - `Sample_Learner_001.txt`  
+    - `Sample_Learner_002.txt`  
+  - `COCA_TEXTS/` — 2 example COCA texts  
+    - `Sample_COCA_acad_001.txt`  
+    - `Sample_COCA_spok_001.txt`  
+  - `Sample_Outputs/` — Results from sample data  
+    - `learner_token_level_pairs_sample.csv`  
+    - `COCA_dependency_PMI_sample.csv`  
+    - `learner_level_analysis_sample.xlsx`  
 
-- `join_reference_pmi_to_learner.py`
-  - Left-join COCA reference frequency & PMI onto learner pairs using the shared key `dependency pair`.
-
----
-
-## Data Requirements & Folder Structure
-
-### 1) COCA reference texts
-`extract_coca_dependency_pairs_pmi.py` expects:
-
-```text
-COCA_TEXTS_DIR/
-  all/
-    *.txt
-  academic/
-    *.txt
-  news/
-    *.txt
-  spoken/
-    *.txt
-```
-
-Each `.txt` file is parsed and dependency tokens are counted for target dependency types:
-
-- `amod`
-- `advmod`
-- `dobj`
-
-PMI is computed as log2 PMI using token-level marginals across all target dependency types (i.e., across `amod`, `advmod`, `dobj`).
+- `Results/` — Full results from complete dataset  
+  - `coverage_statistics.xlsx` — Table 4  
+  - `common_set_pairs.xlsx`  
+  - `pair_level_analysis.xlsx` — RQ1 results  
+  - `student_pmi_eligible_counts_by_type.csv`  
+  - `student_pmi_quantiles_summary.csv`  
+  - `learner_median_pmi_by_corpus.xlsx`  
+  - `learner_level_analysis.xlsx` — RQ2 results  
 
 ---
 
-### 2) Learner transcripts
-`extract_learner_dependency_pairs.py` expects:
+## Data Availability Statement
 
-```text
-LEARNER_TEXTS_DIR/
-  *.txt
-```
+Due to licensing restrictions, **full raw data cannot be shared** in this repository:
 
-Each learner file name is used to infer `student_id`:
-
-`12104238400110.txt` → `student_id = "12104238400110"`
+| Data Type                      | Restriction                              | Alternative Provided      |
+|--------------------------------|------------------------------------------|---------------------------|
+| COCA corpus texts              | Proprietary - requires license from BYU  | ✅ 2 example text files    |
+| TEM-8 Oral learner transcripts | Restricted - cannot redistribute         | ✅ 2 example text files    |
 
 ---
 
-## Outputs
+### Representative Sample Data
 
-### A) COCA reference outputs (domain-specific; run once per domain)
-When running `extract_coca_dependency_pairs_pmi.py`, the script writes two files per domain:
+To ensure reproducibility, we provide:
 
-1. **Dependency pairs + PMI**
-   - `COCA_dependency_pairs_amod_advmod_dobj_with_PMI_{domain}.csv`
+- **2 example learner transcripts** (`Sample_Data/LEARNER_TEXTS/`)
+- **2 example COCA texts** (`Sample_Data/COCA_TEXTS/`)
+- **Complete outputs from these samples** (`Sample_Data/Sample_Outputs/`)
 
-2. **Lemma marginal counts**
-   - `COCA_lemma_marginal_counts_for_PMI_{domain}.csv`
-
-**Join compatibility invariants (COCA):**
-
-- Pair string format: `dep_lemma|head_lemma` (dep|head order)
-- Reference columns include:
-  - `dependency type`
-  - `dependency word (dep lemma)`
-  - `dependency word POS`
-  - `head word (head lemma)`
-  - `head word POS`
-  - `Dependency Pair (dep|head)`
-  - `Dependency Pair Frequency`
-  - `PMI (log2, using token-level marginals across all dep_types)`
+Researchers can run the full analysis pipeline on these examples to verify all computational procedures.
 
 ---
 
-### B) Learner extraction outputs
-`extract_learner_dependency_pairs.py` writes:
+### Accessing Full Data for Replication
 
-- **Token-level learner pairs:**
-  - `OUTPUT_DIR/learner_token_level_pairs.csv`
+To replicate the full study:
 
-- **Per-student counts by dependency type:**
-  - `OUTPUT_DIR/per_student_dep_token_counts.csv`
-
-- **A run log:**
-  - `OUTPUT_DIR/run_log.json`
-
-**Key learner columns (used for join):**
-
-- `student_id`
-- `dependency type`
-- `dependency word`
-- `dependency word pos`
-- `head word`
-- `head word pos`
-- `dependency pair` ✅ (join key)
+1. **COCA data**: Obtain a license from [corpus.byu.edu/coca](https://corpus.byu.edu/coca/)
+2. **Learner data**: Contact [institution name] for data access (restricted)
 
 ---
 
-### C) Final joined dataset (used downstream for analysis)
-`join_reference_pmi_to_learner.py` writes:
+## Script Descriptions
 
-- `OUTPUT_DIR/learner_level_pmi_observations.csv`
-
-This includes columns:
-
-- `student_id`
-- `dependency type`
-- `dependency word`
-- `dependency word pos`
-- `head word`
-- `head word pos`
-- `dependency pair`
-- `coca_ALL_frequency`, `coca_ALL_pmi`
-- `coca_academic_frequency`, `coca_academic_pmi`
-- `coca_news_frequency`, `coca_news_pmi`
-- `coca_spoken_frequency`, `coca_spoken_pmi`
+| Script                                          | Function                                                              | Input                                               | Output                                                                  |
+|-------------------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------|-------------------------------------------------------------------------|
+| `01_extract_learner_dependency_pairs.py`       | Extracts dependency pairs from learner texts                         | `.txt` files in `Data/raw/LEARNER_TEXTS/`           | `learner_token_level_pairs.csv`, `per_student_dep_token_counts.csv`, `run_log.json` |
+| `02_prepare_coca_pmi_data.py`                  | Processes COCA texts and calculates PMI                              | `.txt` files in `Data/raw/COCA_TEXTS/`              | `COCA_dependency_PMI.csv`                                               |
+| `03_pair_level_analysis.py`                    | Computes coverage statistics (Table 4) and compares PMI distributions across corpora (RQ1) | `Learner_dependency_pairs.csv`, COCA CSV files | `coverage_statistics.xlsx`, `common_set_pairs.xlsx`, `pair_level_analysis.xlsx` |
+| `04_prepare_learner_pmi_data.py`               | Prepares learner-level PMI data                                      | `Learner_dependency_pairs.csv`, COCA CSV files      | `student_pmi_eligible_counts_by_type.csv`, `student_pmi_quantiles_summary.csv` |
+| `05_learner_level_analysis.py`                 | Analyzes learner ranking stability (RQ2)                             | `Dependency_pairs extracted from learner corpus_with_frequency_PMI.xlsx` | `learner_median_pmi_by_corpus.xlsx`, `learner_level_analysis.xlsx` |
 
 ---
 
-## Join Compatibility (Must-Haves)
+## Output Files Summary
 
-The join script assumes the COCA reference CSVs contain:
-
-### Required reference columns
-- `Dependency Pair (dep|head)`
-- `Dependency Pair Frequency`
-- `PMI (log2, using token-level marginals across all dep_types)`
-
-### Required learner columns
-- `dependency pair`
-- `dependency type`
-- `dependency word`
-- `dependency word pos`
-- `head word`
-- `head word pos`
-- `student_id`
-
-✅ **Join key:** `dependency pair`  
-✅ **Join type:** left join  
-
-If a learner pair does not exist in the COCA reference for a register, the corresponding PMI/frequency becomes missing (`NaN`).
+| File                                           | Description                                                         | Generated By      |
+|------------------------------------------------|---------------------------------------------------------------------|-------------------|
+| `learner_token_level_pairs.csv`               | Token-level dependency pairs from learners                          | Script 01         |
+| `per_student_dep_token_counts.csv`            | Counts of each dependency type per student                          | Script 01         |
+| `run_log.json`                                | Reproducibility log with parameters and versions                    | Script 01         |
+| `COCA_dependency_PMI.csv`                     | COCA dependency pairs with PMI scores (11 columns)                  | Script 02         |
+| `coverage_statistics.xlsx`                    | Table 4: Coverage of learner pairs across corpora                   | Script 03         |
+| `common_set_pairs.xlsx`                       | Dependency pairs present in all four COCA subcorpora                | Script 03         |
+| `pair_level_analysis.xlsx`                    | RQ1 results: Friedman + Wilcoxon on common set                      | Script 03         |
+| `student_pmi_eligible_counts_by_type.csv`     | Counts of PMI-eligible pairs per student                            | Script 04         |
+| `student_pmi_quantiles_summary.csv`           | PMI median, Q1, Q3, IQR per student                                 | Script 04         |
+| `learner_median_pmi_by_corpus.xlsx`           | Median PMI per learner (intermediate)                               | Script 05         |
+| `learner_level_analysis.xlsx`                 | RQ2 results: Friedman, Spearman, rank shifts                        | Script 05         |
 
 ---
 
-## Quick Start (Run Order)
+## Execution Instructions
 
-### Step 1: Extract learner dependency pairs
-Run once:
+### 1. Install Dependencies
 
 ```bash
-python extract_learner_dependency_pairs.py
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-Make sure at the top of the script you set:
-
-- `LEARNER_INPUT_DIR = "LEARNER_TEXTS_DIR"`
-- `OUTPUT_DIR = "OUTPUT_DIR"`
-
-This produces:
-
-- `OUTPUT_DIR/learner_token_level_pairs.csv`
-
----
-
-### Step 2: Extract COCA reference PMI (run 4 times)
-Run reference extraction for each domain:
+### 2. Run with Sample Data (Verify Pipeline)
 
 ```bash
-python extract_coca_dependency_pairs_pmi.py --domain all --coca_input_root COCA_TEXTS_DIR --output_dir OUTPUT_DIR --spacy_model en_core_web_sm
-python extract_coca_dependency_pairs_pmi.py --domain academic --coca_input_root COCA_TEXTS_DIR --output_dir OUTPUT_DIR --spacy_model en_core_web_sm
-python extract_coca_dependency_pairs_pmi.py --domain news --coca_input_root COCA_TEXTS_DIR --output_dir OUTPUT_DIR --spacy_model en_core_web_sm
-python extract_coca_dependency_pairs_pmi.py --domain spoken --coca_input_root COCA_TEXTS_DIR --output_dir OUTPUT_DIR --spacy_model en_core_web_sm
+# Copy sample data to expected locations
+cp Sample_Data/LEARNER_TEXTS/*.txt Data/raw/LEARNER_TEXTS/
+cp Sample_Data/COCA_TEXTS/*.txt Data/raw/COCA_TEXTS/
+
+# Run all scripts
+cd Code/
+python 01_extract_learner_dependency_pairs.py
+python 02_prepare_coca_pmi_data.py
+python 03_pair_level_analysis.py
+python 04_prepare_learner_pmi_data.py
+python 05_learner_level_analysis.py
 ```
 
-This produces 4 sets of:
+### 3. Run with Full Data (After Obtaining License)
 
-- `OUTPUT_DIR/COCA_dependency_pairs_amod_advmod_dobj_with_PMI_{domain}.csv`
+Place your full data in:
+
+- Learner transcripts: `Data/raw/LEARNER_TEXTS/`
+- COCA texts: `Data/raw/COCA_TEXTS/`
+
+Then run scripts in order as above.
 
 ---
 
-### Step 3: Join reference PMI onto learner data
-Run once:
+## Dependencies
+
+### Python Version
+Python 3.8 or higher
+
+### Required Packages (`requirements.txt`)
+
+```
+pandas>=1.3.0
+numpy>=1.21.0
+scipy>=1.7.0
+statsmodels>=0.13.0
+spacy>=3.5.0
+tqdm>=4.62.0
+openpyxl>=3.0.0
+```
+
+### spaCy Model
 
 ```bash
-python join_reference_pmi_to_learner.py
+python -m spacy download en_core_web_sm
 ```
-
-Ensure `join_reference_pmi_to_learner.py` points to:
-
-- `OUTPUT_DIR/learner_token_level_pairs.csv`
-- `OUTPUT_DIR/COCA_dependency_pairs_amod_advmod_dobj_with_PMI_{domain}.csv`
-
-Then it outputs:
-
-- `OUTPUT_DIR/learner_level_pmi_observations.csv`
-
----
-
-## Notes / Reproducibility
-
-- Dependency parsing is performed using spaCy (`en_core_web_sm` by default in your scripts).
-- Target dependency types are consistently: `amod`, `advmod`, `dobj` in both COCA and learner extraction.
-- Pair strings are lowercased lemmas:
-  - `dep_lemma = token.lemma_.lower()`
-  - `head_lemma = token.head.lemma_.lower()`
-- The join is a left join:
-  - if a learner pair does not exist in the COCA reference for a register, the corresponding PMI/frequency becomes missing (`NaN`).
-
----
-
