@@ -17,26 +17,28 @@ OSF_Project/
   - `05_learner_level_analysis.py`  
 
 - `Sample_Data/` — Representative sample data  
-  - `README.md` — Sample data description  
   - `LEARNER_TEXTS/` — 2 example learner transcripts  
     - `Sample_Learner_001.txt`  
     - `Sample_Learner_002.txt`  
   - `COCA_TEXTS/` — 2 example COCA texts  
-    - `Sample_COCA_acad_001.txt`  
-    - `Sample_COCA_spok_001.txt`  
+    - `Sample_COCA_001.txt`  
+    - `Sample_COCA_002.txt`  
   - `Sample_Outputs/` — Results from sample data  
     - `learner_token_level_pairs_sample.csv`  
     - `COCA_dependency_PMI_sample.csv`  
-    - `learner_level_analysis_sample.xlsx`  
 
 - `Results/` — Full results from complete dataset  
-  - `coverage_statistics.xlsx` — Table 4  
-  - `common_set_pairs.xlsx`  
-  - `pair_level_analysis.xlsx` — RQ1 results  
-  - `student_pmi_eligible_counts_by_type.csv`  
-  - `student_pmi_quantiles_summary.csv`  
-  - `learner_median_pmi_by_corpus.xlsx`  
-  - `learner_level_analysis.xlsx` — RQ2 results  
+  - `01_PMI_for_each_dependency_pair in learner texts.xlsx`
+  - `02_Number of PMI-eligible pairs in each learner text.csv`
+  - `03_Descriptive results for the number of PMI-eligible pairs in each learner text.xlsx`
+  - `04_The common set of dependency pairs across reference corpora.xlsx`
+  - `05_Median PMI_in each learner text_across_reference corpora.xlsx`
+  - `Table 4_Coverage of Dependency Pairs in Learner Texts across Reference Corpora (% Used for PMI Calculation).xlsx`
+  - `Table 6_Friedman tests and pairwise Wilcoxon signed-rank tests for median PMI across reference corpora.xlsx`  
+  - `Table 7_Distribution of dependency pairs with substantial (∣ΔPMI∣≥1) vs. minor (∣ΔPMI∣1) absolute PMI differences across reference corpora.xlsx`  
+  - `Table 8_Friedman tests and Wilcoxon signed-rank post-hoc comparisons for learners’ median PMI scores across reference corpora.csv`  
+  - `Table 9_Spearman’s ρ correlations for median PMI rankings across reference corpora.xlsx`  
+  - `Table 10_Rank change based on median PMI scores across reference corpora by dependency.csv`
 
 ---
 
@@ -57,7 +59,7 @@ To ensure reproducibility, we provide:
 
 - **2 example learner transcripts** (`Sample_Data/LEARNER_TEXTS/`)
 - **2 example COCA texts** (`Sample_Data/COCA_TEXTS/`)
-- **Complete outputs from these samples** (`Sample_Data/Sample_Outputs/`)
+- **Outputs from these samples** (`Sample_Data/Sample_Outputs/`)
 
 Researchers can run the full analysis pipeline on these examples to verify all computational procedures.
 
@@ -68,7 +70,7 @@ Researchers can run the full analysis pipeline on these examples to verify all c
 To replicate the full study:
 
 1. **COCA data**: Obtain a license from [corpus.byu.edu/coca](https://corpus.byu.edu/coca/)
-2. **Learner data**: Contact [institution name] for data access (restricted)
+2. **Learner data**: Contact Nanjing University for data access (restricted)
 
 ---
 
